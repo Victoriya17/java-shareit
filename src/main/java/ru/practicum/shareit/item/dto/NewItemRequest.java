@@ -7,15 +7,15 @@ import lombok.Data;
 
 @Data
 public class NewItemRequest {
-    Long id;
+    private Long id;
     @NotBlank(message = "Название вещи не может быть пустым")
-    String name;
+    private String name;
     @NotBlank(message = "Описание вещи не может быть пустым")
-    String description;
+    private String description;
     @Positive(message = "Id владельца вещи не может быть меньше или равна 0")
-    Long ownerId;
+    private Long ownerId;
     @NotNull(message = "Доступность вещи должна быть указана")
-    Boolean available;
+    private Boolean available;
     @Positive(message = "Id запроса на вещь не может быть меньше или равна 0")
-    Long requestId;
+    private Long requestId;
 }

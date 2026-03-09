@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 
 @Data
 public class NewRequest {
-    Long id;
+    private Long id;
     @NotBlank(message = "Запрос не может быть пустым")
-    String description;
+    private String description;
     @NotNull(message = "Id пользователя, который оставил запрос, должно быть указано")
     @Positive(message = "Id пользователя, который оставил запрос, должно быть больше 0")
-    Long requestorId;
-    LocalDateTime created;
+    private Long requestorId;
+    private LocalDateTime created;
 }

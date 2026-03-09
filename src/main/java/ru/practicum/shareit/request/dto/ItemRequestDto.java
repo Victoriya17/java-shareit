@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 @Data
 public class ItemRequestDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    Long id;
-    String description;
-    Long requestorId;
-    LocalDateTime created;
+    private Long id;
+    private String description;
+    private Long requestorId;
+    private LocalDateTime created;
 }

@@ -6,12 +6,12 @@ import lombok.Data;
 @Data
 public class ItemDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    Long id;
-    String name;
-    String description;
+    private Long id;
+    private String name;
+    private String description;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    Long ownerId;
-    Boolean available;
+    private Long ownerId;
+    private Boolean available;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    Long requestId;
+    private Long requestId;
 }
