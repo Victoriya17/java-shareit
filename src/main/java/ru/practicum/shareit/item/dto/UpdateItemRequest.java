@@ -4,11 +4,11 @@ import lombok.Data;
 
 @Data
 public class UpdateItemRequest {
-    String name;
-    String description;
-    Long ownerId;
-    Boolean available;
-    Long requestId;
+    private String name;
+    private String description;
+    private Long ownerId;
+    private Boolean available;
+    private Long requestId;
 
     public boolean hasName() {
         return !(name == null || name.isBlank());

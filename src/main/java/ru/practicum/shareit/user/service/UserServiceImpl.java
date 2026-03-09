@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
     private void validateUniqueEmail(String email) {
         userStorage.findUserByEmail(email)
                 .ifPresent(user -> {
-                    throw new DuplicatedDataException("Этот имейл уже используется.");
+                    throw new DuplicatedDataException("Эта почта уже используется.");
                 });
     }
 

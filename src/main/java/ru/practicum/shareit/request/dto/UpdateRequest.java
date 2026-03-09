@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 @Data
 public class UpdateRequest {
     @NotNull(message = "Id запроса вещи должен быть указан")
-    Long id;
-    String description;
-    Long requestorId;
-    LocalDateTime created;
+    private Long id;
+    private String description;
+    private Long requestorId;
+    private LocalDateTime created;
 }

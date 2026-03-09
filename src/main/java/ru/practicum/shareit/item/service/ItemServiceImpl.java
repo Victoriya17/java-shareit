@@ -43,6 +43,9 @@ public class ItemServiceImpl implements  ItemService {
         Item existingItem = itemStorage.findItemById(itemId)
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
 
+        User user = userStorage.findUserById(ownerId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
         if (!existingItem.getOwnerId().equals(ownerId)) {
             throw new NotItemOwnerException("Редактировать данные вещи может только её владелец");
         }
@@ -65,6 +68,9 @@ public class ItemServiceImpl implements  ItemService {
     @Override
     public Collection<ItemDto> findAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.debug("Получение списка всех вещей пользователя");
+        User user = userStorage.findUserById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
         return itemStorage.findAllItems(userId)
                 .stream()
                 .map(ItemMapper::mapToItemDto)
@@ -74,6 +80,9 @@ public class ItemServiceImpl implements  ItemService {
     @Override
     public Collection<ItemDto> findItemToBooking(Long ownerId, String text) {
         log.debug("Получаем записи о вещах, которые ищет арендатор по ключевым символам {}", text);
+        User user = userStorage.findUserById(ownerId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
         if (text == null || text.isBlank()) {
             return List.of();
         }

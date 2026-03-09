@@ -6,10 +6,10 @@ import lombok.Data;
 
 @Data
 public class NewUserRequest {
-    Long id;
+    private Long id;
     @NotBlank(message = "Имя пользователя должно быть указано")
-    String name;
+    private String name;
     @NotBlank(message = "Email пользователя должен быть указан")
     @Email(message = "Email должен быть в формате user@mail.ru")
-    String email;
+    private String email;
 }

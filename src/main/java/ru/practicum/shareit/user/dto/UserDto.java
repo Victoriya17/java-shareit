@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class UserDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    Long id;
-    String name;
-    String email;
+    private Long id;
+    private String name;
+    private String email;
 }

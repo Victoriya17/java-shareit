@@ -1,7 +1,7 @@
 package ru.practicum.shareit.booking.model;
 
 import lombok.Data;
-import ru.practicum.shareit.enums.Statuses;
+import ru.practicum.shareit.enums.Status;
 
 import java.time.LocalDateTime;
 
@@ -12,5 +12,5 @@ public class Booking {
     private LocalDateTime end;
     private Long itemId;
     private Long bookerId;
-    private Statuses status;
+    private Status status;
 }

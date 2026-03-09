@@ -2,19 +2,19 @@ package ru.practicum.shareit.booking.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import ru.practicum.shareit.enums.Statuses;
+import ru.practicum.shareit.enums.Status;
 
 import java.time.LocalDateTime;
 
 @Data
 public class UpdateBookingRequest {
     @NotNull(message = "Id бронирования должен быть указан")
-    Long id;
-    LocalDateTime start;
-    LocalDateTime end;
-    Long itemId;
-    Long bookerId;
-    Statuses status;
+    private Long id;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private Long itemId;
+    private Long bookerId;
+    private Status status;
 
     public boolean hasStart() {
         return !(start == null);
