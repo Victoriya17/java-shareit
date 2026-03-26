@@ -52,7 +52,7 @@ public class InMemoryItemStorage implements ItemStorage {
     public Collection<Item> findAllItems(Long userId) {
         return items.values()
                 .stream()
-                .filter(item -> item.getOwnerId().equals(userId))
+                .filter(item -> item.getOwner().getId().equals(userId))
                 .toList();
     }
 

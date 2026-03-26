@@ -2,10 +2,18 @@ package ru.practicum.shareit.item.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.item.comment.mapper.CommentMapper;
+import ru.practicum.shareit.item.comment.model.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.NewItemRequest;
+import ru.practicum.shareit.item.dto.OtherItemDto;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemMapper {
@@ -14,19 +22,20 @@ public class ItemMapper {
         dto.setId(item.getId());
         dto.setName(item.getName());
         dto.setDescription(item.getDescription());
-        dto.setOwnerId(item.getOwnerId());
+        dto.setOwnerId(item.getOwner().getId());
         dto.setAvailable(item.getAvailable());
-        dto.setRequestId(item.getRequestId());
+        if (item.getRequest() != null) {
+            dto.setRequestId(item.getRequest().getId());
+        }
         return dto;
     }
 
-    public static Item mapToItem(Long ownerId, NewItemRequest request) {
+    public static Item mapToItem(User owner, NewItemRequest request) {
         Item item = new Item();
         item.setName(request.getName());
         item.setDescription(request.getDescription());
-        item.setOwnerId(ownerId);
+        item.setOwner(owner);
         item.setAvailable(request.getAvailable());
-        item.setRequestId(request.getRequestId());
         return item;
     }
 
@@ -41,5 +50,35 @@ public class ItemMapper {
             item.setAvailable(request.getAvailable());
         }
         return item;
+    }
+
+    public static OtherItemDto mapToOtherItemDto(Item item,
+                                                 List<Comment> comments,
+                                                 Optional<LocalDateTime> lastBooking,
+                                                 Optional<LocalDateTime> nextBooking) {
+        OtherItemDto dto = new OtherItemDto();
+        dto.setId(item.getId());
+        dto.setName(item.getName());
+        dto.setDescription(item.getDescription());
+        dto.setAvailable(item.getAvailable());
+        dto.setOwnerId(item.getOwner().getId());
+        lastBooking.ifPresent(dto::setLastBooking);
+        nextBooking.ifPresent(dto::setNextBooking);
+        dto.setComments(comments.stream().map(CommentMapper::mapToCommentDto).toList());
+        return dto;
+    }
+
+    public static OtherItemDto mapToOtherItemDto(Item item, List<Comment> comments) {
+        OtherItemDto dto = new OtherItemDto();
+        dto.setId(item.getId());
+        dto.setName(item.getName());
+        dto.setDescription(item.getDescription());
+        dto.setAvailable(item.getAvailable());
+        dto.setOwnerId(item.getOwner().getId());
+        dto.setComments(comments.stream().map(CommentMapper::mapToCommentDto).toList());
+        if (item.getRequest() != null) {
+            dto.setRequestId(item.getRequest().getId());
+        }
+        return dto;
     }
 }

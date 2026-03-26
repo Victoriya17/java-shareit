@@ -6,6 +6,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.NewRequest;
 import ru.practicum.shareit.request.dto.UpdateRequest;
 import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemRequestMapper {
@@ -13,15 +14,15 @@ public class ItemRequestMapper {
         ItemRequestDto dto = new ItemRequestDto();
         dto.setId(itemRequest.getId());
         dto.setDescription(itemRequest.getDescription());
-        dto.setRequestorId(itemRequest.getRequestorId());
+        dto.setRequestorId(itemRequest.getRequestor().getId());
         dto.setCreated(itemRequest.getCreated());
         return dto;
     }
 
-    public static ItemRequest mapToItemRequest(NewRequest request) {
+    public static ItemRequest mapToItemRequest(NewRequest request, User requestor) {
         ItemRequest itemRequest = new ItemRequest();
         itemRequest.setDescription(request.getDescription());
-        itemRequest.setRequestorId(request.getRequestorId());
+        itemRequest.setRequestor(requestor);
         itemRequest.setCreated(request.getCreated());
         return itemRequest;
     }
