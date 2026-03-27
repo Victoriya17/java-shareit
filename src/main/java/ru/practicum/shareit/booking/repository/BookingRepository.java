@@ -69,4 +69,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.item.id = ?1 AND b.status = ?2 AND b.start > ?3 " +
             "ORDER BY b.start ASC")
     List<LocalDateTime> findNextBookingStartByItemId(Long itemId, Status status, LocalDateTime now);
+
+    boolean existsByItemIdAndStatusNotAndStartBeforeAndEndAfter(Long itemId, Status status, LocalDateTime end,
+                                                                LocalDateTime start);
 }

@@ -1,8 +1,10 @@
 package ru.practicum.shareit.booking.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -25,38 +27,20 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Validated
+@RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
-    public BookingServiceImpl(BookingRepository bookingRepository, UserRepository userRepository,
-                              ItemRepository itemRepository) {
-        this.bookingRepository = bookingRepository;
-        this.userRepository = userRepository;
-        this.itemRepository = itemRepository;
-    }
 
-    private Booking findBookingById(Long bookingId) {
-        return bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException("Бронирование c ID " + bookingId + "не найдено"));
-    }
-
-    private User findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь c ID " + userId + ", создающий бронирование, " +
-                        "не найден"));
-    }
-
-    private Item findItemById(Long itemId) {
-        return itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Вещь для бронирования c ID " + itemId + "не найдена"));
-    }
 
     @Override
     @Transactional
-    public BookingDto create(Long userId, NewBookingRequest request) {
-        log.debug("Создание записи о бронировании");
+    public BookingDto create(Long userId,NewBookingRequest request) {
+        log.debug("Запрос на бронирование: userId={}, itemId={}, start={}, end={}",
+                userId, request.getItemId(), request.getStart(), request.getEnd());
 
         Item item = findItemById(request.getItemId());
         User user = findUserById(userId);
@@ -66,7 +50,14 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (user.getId().equals(item.getOwner().getId())) {
-            throw new ValidationException("Нельзя бронировать собственную вещь");
+            throw new NotFoundException("Нельзя бронировать собственную вещь");
+        }
+
+        boolean overlapping = bookingRepository.existsByItemIdAndStatusNotAndStartBeforeAndEndAfter(item.getId(),
+                Status.REJECTED, request.getEnd(), request.getStart());
+
+        if (overlapping) {
+            throw new ValidationException("На эти даты вещь уже занята другим бронированием");
         }
 
         Booking booking = BookingMapper.mapToBooking(request, user, item);
@@ -80,6 +71,8 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto approveBooking(Long bookingId, Long userId, Boolean approved) {
         Booking booking = findBookingById(bookingId);
         Item item = findItemById(booking.getItem().getId());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ValidationException("Пользователь с ID " + userId + " не найден"));
 
         if (!item.getOwner().getId().equals(userId)) {
             throw new NotItemOwnerException("Изменять статус вещи может только её владелец");
@@ -191,5 +184,21 @@ public class BookingServiceImpl implements BookingService {
         return bookingList.stream()
                 .map(BookingMapper::mapToBookingDto)
                 .collect(Collectors.toList());
+    }
+
+    private Booking findBookingById(Long bookingId) {
+        return bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Бронирование c ID " + bookingId + "не найдено"));
+    }
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь c ID " + userId + ", создающий бронирование, " +
+                        "не найден"));
+    }
+
+    private Item findItemById(Long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Вещь для бронирования c ID " + itemId + "не найдена"));
     }
 }
