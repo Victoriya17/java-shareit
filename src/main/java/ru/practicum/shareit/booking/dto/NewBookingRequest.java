@@ -14,7 +14,4 @@ public class NewBookingRequest {
     @NotNull(message = "Id искомой вещи должен быть указан")
     @Positive(message = "Id вещи должен быть больше 0")
     private Long itemId;
-    @NotNull(message = "Id пользователя, который хочет забронировать вещь, должно быть указано")
-    @Positive(message = "Id пользователя, который хочет забронировать вещь, должно быть больше 0")
-    private Long bookerId;
 }
