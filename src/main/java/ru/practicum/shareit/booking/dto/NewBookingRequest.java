@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking.dto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
-import ru.practicum.shareit.enums.Status;
 
 import java.time.LocalDateTime;
 
@@ -15,10 +14,4 @@ public class NewBookingRequest {
     @NotNull(message = "Id искомой вещи должен быть указан")
     @Positive(message = "Id вещи должен быть больше 0")
     private Long itemId;
-    @NotNull(message = "Id пользователя, который хочет забронировать вещь, должно быть указано")
-    @Positive(message = "Id пользователя, который хочет забронировать вещь, должно быть больше 0")
-    private Long bookerId;
-    @NotNull(message = "Статус бронирования вещи должен быть указан. Укажите одно из: \"WAITING\", \"APPROVED\", " +
-            "\"REJECTED\", \"CANCELED\".")
-    private Status status;
 }
