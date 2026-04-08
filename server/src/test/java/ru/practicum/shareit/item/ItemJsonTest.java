@@ -42,7 +42,6 @@ public class ItemJsonTest {
 
     @Test
     void testOtherItemDto() throws Exception {
-        // Фиксированные даты для исключения ошибок с наносекундами
         LocalDateTime last = LocalDateTime.of(2025, 5, 3, 18, 15, 12);
         LocalDateTime next = LocalDateTime.of(2025, 5, 5, 17, 20, 15);
         LocalDateTime commentTime = LocalDateTime.of(2025, 5, 4, 10, 0, 0);

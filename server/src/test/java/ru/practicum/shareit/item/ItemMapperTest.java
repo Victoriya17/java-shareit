@@ -132,6 +132,34 @@ class ItemMapperTest {
         assertThat(result.getRequestId(), is(nullValue()));
     }
 
+    @Test
+    void updateItemFieldsFullTest() {
+        UpdateItemRequest updateRequest = new UpdateItemRequest();
+        updateRequest.setName("New Name");
+        updateRequest.setDescription("New Desc");
+        updateRequest.setAvailable(false);
+
+        Item result = ItemMapper.updateItemFields(item, updateRequest);
+
+        assertThat(result.getName(), equalTo("New Name"));
+        assertThat(result.getDescription(), equalTo("New Desc"));
+        assertThat(result.getAvailable(), is(false));
+    }
+
+    @Test
+    void mapToOtherItemDtoWithRequestFullTest() {
+        OtherItemDto result = ItemMapper.mapToOtherItemDto(item, List.of());
+        assertThat(result.getRequestId(), equalTo(itemRequest.getId()));
+    }
+
+    @Test
+    void testPrivateConstructor() throws Exception {
+        var constructor = ItemMapper.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        ItemMapper instance = constructor.newInstance();
+        assertThat(instance, notNullValue());
+    }
+
     private Comment createComment() {
         Comment comment = new Comment();
         comment.setId(1L);

@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.*;
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class ItemRequestServiceIntegrationTest {
+class ItemRequestServiceImplIntegrationTest {
 
     private final EntityManager em;
     private final ItemRequestService itemRequestService;

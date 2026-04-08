@@ -12,6 +12,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.enums.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exceptions.BookingStatusException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.NotItemOwnerException;
 import ru.practicum.shareit.exceptions.ValidationException;
@@ -141,5 +142,95 @@ class BookingServiceImplTest {
         Collection<BookingDto> result = bookingService.findAllBookingsByUser(1L, "ALL");
 
         assertThat(result, hasSize(1));
+    }
+
+    @Test
+    void createThrowsExceptionWhenOverlapping() {
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
+        when(bookingRepository.existsByItemIdAndStatusNotAndStartBeforeAndEndAfter(anyLong(), any(), any(), any()))
+                .thenReturn(true);
+
+        assertThrows(ValidationException.class, () -> bookingService.create(1L, request));
+    }
+
+    @Test
+    void approveBookingThrowsExceptionWhenStatusNotWaiting() {
+        booking.setStatus(Status.APPROVED);
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(owner));
+
+        assertThrows(BookingStatusException.class,
+                () -> bookingService.approveBooking(1L, 2L, true));
+    }
+
+    @Test
+    void findAllBookingsByUserAllStates() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
+
+        bookingService.findAllBookingsByUser(1L, "CURRENT");
+        bookingService.findAllBookingsByUser(1L, "PAST");
+        bookingService.findAllBookingsByUser(1L, "FUTURE");
+        bookingService.findAllBookingsByUser(1L, "WAITING");
+        bookingService.findAllBookingsByUser(1L, "REJECTED");
+
+        verify(bookingRepository).findAllCurrentBookingsByBookerId(anyLong(), any());
+        verify(bookingRepository).findByBookerIdAndEndBeforeOrderByStartDesc(anyLong(), any());
+        verify(bookingRepository).findByBookerIdAndStartAfterOrderByStartDesc(anyLong(), any());
+        verify(bookingRepository).findByBookerIdAndStatusOrderByStartDesc(anyLong(), eq(Status.WAITING));
+        verify(bookingRepository).findByBookerIdAndStatusOrderByStartDesc(anyLong(), eq(Status.REJECTED));
+    }
+
+    @Test
+    void findAllBookingsByOwnerItemsAllStates() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(owner));
+
+        bookingService.findAllBookingsByOwnerItems(2L, "ALL");
+        bookingService.findAllBookingsByOwnerItems(2L, "CURRENT");
+        bookingService.findAllBookingsByOwnerItems(2L, "PAST");
+        bookingService.findAllBookingsByOwnerItems(2L, "FUTURE");
+        bookingService.findAllBookingsByOwnerItems(2L, "WAITING");
+        bookingService.findAllBookingsByOwnerItems(2L, "REJECTED");
+
+        verify(bookingRepository).findAllByItemOwnerId(2L);
+        verify(bookingRepository).findAllCurrentBookingsByOwnerId(anyLong(), any());
+        verify(bookingRepository).findAllByItemOwnerIdAndEndBefore(anyLong(), any());
+        verify(bookingRepository).findAllByItemOwnerIdAndStartAfter(anyLong(), any());
+        verify(bookingRepository).findAllByItemOwnerIdAndStatus(anyLong(), eq(Status.WAITING));
+        verify(bookingRepository).findAllByItemOwnerIdAndStatus(anyLong(), eq(Status.REJECTED));
+    }
+
+    @Test
+    void findBookingThrowsExceptionWhenUserNotAuthorized() {
+        User stranger = new User(3L, "stranger@mail.com", "Str");
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(owner));
+
+        assertThrows(ValidationException.class, () -> bookingService.findBooking(1L, 3L));
+    }
+
+    @Test
+    void findBookingById_ThrowsNotFound() {
+        when(bookingRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> bookingService.findBooking(999L, 1L));
+    }
+
+    @Test
+    void findUserById_ThrowsNotFound() {
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> bookingService.create(999L, request));
+    }
+
+    @Test
+    void findItemById_ThrowsNotFound() {
+        when(itemRepository.findById(999L)).thenReturn(Optional.empty());
+
+        request.setItemId(999L);
+        assertThrows(NotFoundException.class, () -> bookingService.create(1L, request));
     }
 }

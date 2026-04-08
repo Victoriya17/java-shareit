@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.UpdateBookingRequest;
 import ru.practicum.shareit.enums.Status;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -39,5 +40,19 @@ public class BookingJsonTest {
         assertThat(result).extractingJsonPathStringValue("$.item.name").isEqualTo("name");
         assertThat(result).extractingJsonPathNumberValue("$.booker.id").isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.booker.email").isEqualTo("ivan@email.com");
+    }
+
+    @Test
+    void testUpdateBookingRequestLogic() {
+        UpdateBookingRequest request = new UpdateBookingRequest();
+
+        assertThat(request.hasStart()).isFalse();
+        assertThat(request.hasEnd()).isFalse();
+
+        request.setStart(LocalDateTime.now());
+        request.setEnd(LocalDateTime.now().plusDays(1));
+
+        assertThat(request.hasStart()).isTrue();
+        assertThat(request.hasEnd()).isTrue();
     }
 }
