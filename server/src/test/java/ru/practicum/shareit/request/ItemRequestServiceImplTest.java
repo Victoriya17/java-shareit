@@ -65,14 +65,18 @@ class ItemRequestServiceImplTest {
     @Test
     void findAllItemRequestsByRequestorIdSuccess() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        itemRequest.setId(1L);
         when(itemRequestRepository.findByRequestorIdOrderByCreatedDesc(1L))
                 .thenReturn(List.of(itemRequest));
-        when(itemRepository.findByRequestId(1L)).thenReturn(Collections.emptyList());
+        when(itemRepository.findAllByRequestIdIn(List.of(1L)))
+                .thenReturn(Collections.emptyList());
 
         Collection<ItemRequestDto> result = itemRequestService.findAllItemRequestsByRequestorId(1L);
 
         assertThat(result, hasSize(1));
-        verify(itemRepository).findByRequestId(1L);
+
+        verify(itemRepository).findAllByRequestIdIn(List.of(1L));
+        verify(itemRepository, never()).findByRequestId(anyLong());
     }
 
     @Test

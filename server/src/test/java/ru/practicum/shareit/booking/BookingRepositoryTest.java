@@ -4,13 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.enums.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -23,9 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataJpaTest
 class BookingRepositoryTest {
 
-    @Autowired private BookingRepository bookingRepository;
-    @Autowired private UserRepository userRepository;
-    @Autowired private ItemRepository itemRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
+    @Autowired
+    private TestEntityManager entityManager;
 
     private User owner;
     private User booker;
@@ -35,9 +35,11 @@ class BookingRepositoryTest {
     @BeforeEach
     void setUp() {
         now = LocalDateTime.now();
-        owner = userRepository.save(new User(null, "Owner", "owner@mail.com"));
-        booker = userRepository.save(new User(null, "Booker", "booker@mail.com"));
-        item = itemRepository.save(new Item(null, "Drill", "Desc", owner, true, null));
+        owner = entityManager.persist(new User(null, "Owner", "owner@mail.com"));
+        booker = entityManager.persist(new User(null, "Booker", "booker@mail.com"));
+        item = entityManager.persist(new Item(null, "Drill", "Desc", owner, true, null));
+
+        entityManager.flush();
     }
 
     @Test

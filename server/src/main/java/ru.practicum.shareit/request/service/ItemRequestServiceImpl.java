@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -16,7 +15,9 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -54,22 +55,20 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional(readOnly = true)
     public Collection<ItemRequestDto> findAllItemRequestsByRequestorId(Long requestorId) {
         log.debug("Получение списка запросов пользователя с ID {}", requestorId);
-        User requestor = findUser(requestorId);
+        findUser(requestorId);
         List<ItemRequest> requests = itemRequestRepository.findByRequestorIdOrderByCreatedDesc(requestorId);
+
+        List<Long> requestIds = requests.stream()
+                .map(ItemRequest::getId)
+                .collect(Collectors.toList());
+
+        Map<Long, List<Item>> itemsByRequestId = itemRepository.findAllByRequestIdIn(requestIds).stream()
+                .collect(Collectors.groupingBy(item -> item.getRequest().getId()));
+
         return requests.stream()
                 .map(request -> {
-                    ItemRequestDto dto = ItemRequestMapper.mapToItemRequestDto(request);
-                    List<Item> items = itemRepository.findByRequestId(request.getId());
-                    dto.setItems(items.stream()
-                            .map(item -> {
-                                ItemDto itemDto = new ItemDto();
-                                itemDto.setId(item.getId());
-                                itemDto.setName(item.getName());
-                                itemDto.setOwnerId(item.getOwner().getId());
-                                return itemDto;
-                            })
-                            .collect(Collectors.toList()));
-                    return dto;
+                    List<Item> items = itemsByRequestId.getOrDefault(request.getId(), Collections.emptyList());
+                    return ItemRequestMapper.mapToItemRequestDto(request, items);
                 })
                 .collect(Collectors.toList());
     }
