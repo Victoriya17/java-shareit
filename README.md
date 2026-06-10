@@ -1,11 +1,10 @@
-# java-shareit
-Template repository for Shareit project.
+# Приложение Shareit
 
 ## Схема базы данных
 
 ![shareit.png](server/src/main/resources/shareit.png)
 
-### Архитектура и бизнес-логика приложения (ТЗ ShareIt)
+### Архитектура и бизнес-логика приложения
 
 Приложение спроектировано по **микросервисной архитектуре** и разделено на два независимых модуля, общающихся между 
 собой по REST API:
@@ -168,3 +167,10 @@ Template repository for Shareit project.
    -- Получение списка запросов других пользователей, отсортированных от новых к старым (findAllItemRequests)
    SELECT * FROM requests WHERE requestor_id != {requestorId} ORDER BY created DESC;
    ```
+
+### ТЕХНОЛОГИЧЕСКИЙ СТЕК
+* Язык и окружение: Java 21, Maven (Мультимодульный проект: `gateway`, `server`)
+* Фреймворк: Spring Boot 3.3.2, Spring Data JPA, Spring Web
+* Валидация и сериализация: Jakarta Validation API, Jackson
+* База данных: PostgreSQL, H2 (для тестов)
+* Инструменты: Docker, Docker Compose, Lombok
