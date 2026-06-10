@@ -169,7 +169,7 @@
    ```
 
 ### ТЕХНОЛОГИЧЕСКИЙ СТЕК
-* Язык и окружение: Java 21, Maven (Мультимодульный проект: `gateway`, `server`)
+* Язык и окружение: Java 21 (Amazon Corretto), Maven (Мультимодульный проект: `gateway`, `server`)
 * Фреймворк: Spring Boot 3.3.2, Spring Data JPA, Spring Web
 * Валидация и сериализация: Jakarta Validation API, Jackson
 * База данных: PostgreSQL, H2 (для тестов)
