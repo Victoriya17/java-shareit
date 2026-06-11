@@ -167,6 +167,7 @@
    -- Получение списка запросов других пользователей, отсортированных от новых к старым (findAllItemRequests)
    SELECT * FROM requests WHERE requestor_id != {requestorId} ORDER BY created DESC;
    ```
+---
 
 ### ТЕХНОЛОГИЧЕСКИЙ СТЕК
 * Язык и окружение: Java 21 (Amazon Corretto), Maven (Мультимодульный проект: `gateway`, `server`)
@@ -174,3 +175,39 @@
 * Валидация и сериализация: Jakarta Validation API, Jackson
 * База данных: PostgreSQL, H2 (для тестов)
 * Инструменты: Docker, Docker Compose, Lombok
+
+---
+
+### Системные требования
+
+* Операционная система: Windows, macOS, Linux
+* Среда выполнения: Java 21 (Amazon Corretto)
+* Инструменты сборки и контейнеризации: Maven 3.9+ и Docker Desktop (с поддержкой Docker Compose)
+* Свободные порты: 8080 (Gateway), 9090 (Server), 5432 (PostgreSQL)
+
+---
+
+### Инструкция по развертыванию и запуску
+
+1. Клонируйте репозиторий с проектом:
+ `git clone https://github.com`
+3. Перейдите в корневую директорию проекта:
+   `cd shareit`
+4. Скомпилируйте исходный код и соберите jar-архивы для всех модулей:
+   `mvn clean package`
+5. Запустите всю инфраструктуру (микросервисы Gateway, Server и базу данных PostgreSQL) одной командой:
+
+   `docker-compose up -d --build`
+
+После этого шлюз приложения начнет принимать внешние запросы по адресу http://localhost:8080.
+
+---
+
+### Полезные команды для управления контейнерами
+
+* Просмотр логов работающих сервисов:
+  `docker-compose logs -f`
+* Остановка и удаление контейнеров с сохранением данных в базе:
+  `docker-compose down`
+* Полная очистка контейнеров и созданных баз данных:
+  `docker-compose down -v`
